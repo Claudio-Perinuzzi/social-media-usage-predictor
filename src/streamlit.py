@@ -1,11 +1,18 @@
 import streamlit as st
 import subprocess
-import pandas as pd
 
 # https://docs.streamlit.io/develop/api-reference/widgets
 
 ## I can grow my dataset to include more options
 
+#streamlit does not provide the java command, i should use docker to bundle java w/ the app
+#Java as a Microservice:
+
+# Another approach is to separate the Java logic from your Streamlit app and have Java running as a separate service.
+# You can set up the Java application on another server (or cloud instance) and communicate with it via HTTP, REST API, or other inter-process communication methods.
+# Your Streamlit app would make API calls to this Java service, which can handle the required Java-based logic.
+
+#Some options: [1] If you have the java source code, then suggest you convert it to python and run that directly in your app. [2] Wrap the java functionality in an API and deploy the API in another cloud service. Call that API from Streamlit. [1] >> [2] Arvindra
 
 def main():
 
@@ -96,7 +103,14 @@ def run_jar(arg_map):
     try:
         # Extract the values from the dictionary and convert them to strings
         string_args = [str(value) for value in arg_map.values()]        
-        result = subprocess.run(['java', '-jar', 'dist/predict.jar'] + string_args, capture_output=True, text=True)
+        #result = subprocess.run(['java', '-jar', 'dist/predict.jar'] + string_args, capture_output=True, text=True)
+       
+        #DEBUGGING =====
+        result = subprocess.run(['java', '-version'], capture_output=True, text=True)
+        print("STDOUT:", result.stdout)  # Normally, this will be empty because Java version info goes to stderr
+        print("STDERR:", result.stderr)  # The version info will appear here
+        # ==============
+
         return result.stdout  # Return the output of the .jar file
     except Exception as e:
         return str(e)  # Return any error messages
