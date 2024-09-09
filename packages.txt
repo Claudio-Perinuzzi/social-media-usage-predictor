@@ -1,1 +1,3 @@
 default-jre-headless
+openjdk-11-jdk-headless
+build-essential
