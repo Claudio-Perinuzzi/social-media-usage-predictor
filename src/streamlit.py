@@ -102,16 +102,17 @@ def main():
 def run_jar(arg_map):
     try:
         # Extract the values from the dictionary and convert them to strings
-        string_args = [str(value) for value in arg_map.values()]        
-        #result = subprocess.run(['java', '-jar', 'dist/predict.jar'] + string_args, capture_output=True, text=True)
+        # string_args = [str(value) for value in arg_map.values()]        
+        # result = subprocess.run(['java', '-jar', 'dist/predict.jar'] + string_args, capture_output=True, text=True)
        
-        #DEBUGGING =====
+        #DEBUGGING ========
         result = subprocess.run(['java', '-version'], capture_output=True, text=True)
+        test = result.stderr
         print("STDOUT:", result.stdout)  # Normally, this will be empty because Java version info goes to stderr
         print("STDERR:", result.stderr)  # The version info will appear here
         # ==============
 
-        return result.stdout  # Return the output of the .jar file
+        return test  # Return the output of the .jar file
     except Exception as e:
         return str(e)  # Return any error messages
 
