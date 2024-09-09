@@ -13,6 +13,7 @@ import java.util.zip.GZIPInputStream;
 // jar cfm predict.jar MANIFEST.MF -C bin .
 
 // jar cfm dist/predict.jar META-INF/MANIFEST.MF -C bin .
+//# javac --release 17 src/*.java
 
 public class Main {
 

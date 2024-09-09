@@ -2,23 +2,6 @@ import streamlit as st
 import subprocess
 import os
 
-#openjdk version "11.0.24" 2024-07-16
-# OpenJDK Runtime Environment (build 11.0.24+8-post-Debian-2deb11u1)
-# OpenJDK 64-Bit Server VM (build 11.0.24+8-post-Debian-2deb11u1, mixed mode, sharing)
-
-
-# https://docs.streamlit.io/develop/api-reference/widgets
-
-## I can grow my dataset to include more options
-
-#streamlit does not provide the java command, i should use docker to bundle java w/ the app
-#Java as a Microservice:
-
-# Another approach is to separate the Java logic from your Streamlit app and have Java running as a separate service.
-# You can set up the Java application on another server (or cloud instance) and communicate with it via HTTP, REST API, or other inter-process communication methods.
-# Your Streamlit app would make API calls to this Java service, which can handle the required Java-based logic.
-
-#Some options: [1] If you have the java source code, then suggest you convert it to python and run that directly in your app. [2] Wrap the java functionality in an API and deploy the API in another cloud service. Call that API from Streamlit. [1] >> [2] Arvindra
 
 def main():
 
