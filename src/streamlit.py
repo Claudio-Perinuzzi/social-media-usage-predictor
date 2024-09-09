@@ -1,5 +1,11 @@
 import streamlit as st
 import subprocess
+import os
+
+#openjdk version "11.0.24" 2024-07-16
+# OpenJDK Runtime Environment (build 11.0.24+8-post-Debian-2deb11u1)
+# OpenJDK 64-Bit Server VM (build 11.0.24+8-post-Debian-2deb11u1, mixed mode, sharing)
+
 
 # https://docs.streamlit.io/develop/api-reference/widgets
 
@@ -101,20 +107,28 @@ def main():
 # Function to run the .jar file
 def run_jar(arg_map):
     try:
+        # Construct the absolute path for the .jar file
+        jar_path = os.path.abspath('dist/predict.jar')
+        print(jar_path)
+        
+        # Check if the .jar file exists
+        if not os.path.exists(jar_path):
+            return "Error: predict.jar file not found!"        
+        
         # Extract the values from the dictionary and convert them to strings
-        # string_args = [str(value) for value in arg_map.values()]        
-        # result = subprocess.run(['java', '-jar', 'dist/predict.jar'] + string_args, capture_output=True, text=True)
-       
-        #DEBUGGING ========
-        result = subprocess.run(['java', '-version'], capture_output=True, text=True)
-        test = result.stderr
-        print("STDOUT:", result.stdout)  # Normally, this will be empty because Java version info goes to stderr
-        print("STDERR:", result.stderr)  # The version info will appear here
-        # ==============
+        string_args = [str(value) for value in arg_map.values()]
 
-        return test  # Return the output of the .jar file
+        # Run the .jar file with the provided arguments
+        result = subprocess.run(['java', '-jar', jar_path] + string_args, capture_output=True, text=True)
+
+        # Debugging: Print both stdout and stderr to help identify any issues
+        print("STDOUT (JAR):", result.stdout)
+        print("STDERR (JAR):", result.stderr)
+
+        # Return the output from the JAR execution
+        return result.stdout if result.stdout else result.stderr
     except Exception as e:
-        return str(e)  # Return any error messages
+        return str(e)  # Return any error messages if something goes wrong
 
 if __name__ == '__main__':
     main()
