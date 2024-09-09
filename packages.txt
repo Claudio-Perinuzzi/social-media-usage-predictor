@@ -1,1 +1,2 @@
-default-jre-headless
+openjdk-20-jdk-headless
+build-essential
