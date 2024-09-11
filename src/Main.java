@@ -1,5 +1,4 @@
 
-//serialize the model?
 import java.io.File;
 import java.io.ObjectOutputStream;
 import java.io.FileOutputStream;
@@ -7,55 +6,23 @@ import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.GZIPInputStream;
+import java.util.Arrays;
 
-//need to deploy and check if streamlit gets a fast enough response
-//else we can just always train
-// jar cfm predict.jar MANIFEST.MF -C bin .
 
-// jar cfm dist/predict.jar META-INF/MANIFEST.MF -C bin .
-//# javac --release 17 src/*.java
+//WHEN READY TO DEPLOY
+    // javac --release 17 src/*.java
+    // jar cfm dist/predict.jar META-INF/MANIFEST.MF -C bin .
+
+//NEXT STEPS:
+    //option for a serialized model
+    //another option for not serializing the model
+    //clean below
+    //clean all files
+    //images for readme, including sequence diagrams (create assets folder)
 
 public class Main {
 
-    public static void getPred(RandomForest forest, DataContainer userInput) {
-        int[] prediction = forest.aggregate(userInput);
-        int label0 = 0, label1 = 0;
-        
-        System.out.println("Prediction array is: ");
-        System.out.print("[");
-        for (int i = 0; i < prediction.length - 1; i++) {
-            System.out.print(prediction[i] + ", ");
-            if (prediction[i] == 1) label1++;
-            else label0++;
-        }
-        System.out.println(prediction[99] + "]");
-        System.out.println("Label0 count = " + label0);
-        System.out.println("Label1 count = " + label1);
-        if (label0 > label1) System.out.println("NO ADDICTION");
-        else System.out.println("YES ADDICTION");
-    }
-
-
-    public static void main(String[] args)  {
-    
-    //STREAMLIT
-    
-    String input = String.join(",", args);
-    System.out.println(input);
-    DataContainer userInput = new DataContainer(input); 
-    RandomForest forest = null;
-
-    
-    //MAIN TESTINGS
-
-    // String input = ",,,,,,,,,,"; 
-    // DataContainer userInput = new DataContainer(input); 
-    // RandomForest forest = null;
-
-
-
-    //random forest testing  ----------------------------------------------
-
+    public static void ensureSerializedModel(RandomForest forest) {
         String modelPath = "model/randomForestModel.ser";
         File file = new File(modelPath);
 
@@ -85,160 +52,74 @@ public class Main {
             }
 
 
+        }    
+    }
+
+
+    
+    // IP ##########################################
+    // Determine the outcome by running the user's input against the forest model and counting the predictions  
+    public static void predict(RandomForest forest, DataContainer userInput) {
+        int[] predictions = forest.aggregate(userInput); // Get predictions from the forest
+        int yes = 0, no = 0; // Initialize label counts for voting
+        
+        // Count the yes and no labels
+        for (int i = 0; i < predictions.length; i++) {
+            if (predictions[i] == 1) yes++;
+            else no++;
         }
 
-        getPred(forest, userInput);
+        if (yes > no) {
+            System.out.println("You are addictied");
+            System.out.println("Confidence is " + yes);
+        }
+        else {
+            System.out.println("You are not addicted");
+            System.out.println("Yes " + yes);
+            System.out.println("No " + no);
+        }
+   
+    }
 
 
+    // Train the model with 100 decision trees
+    public static void trainNewModel(RandomForest forest) {
+        forest = new RandomForest();
+        forest.train(100);    
+    }
 
 
+    public static void main(String[] args)  {
         
-        
-        
-        
-        
-        
-        
-        
-        
-        //forest.print(); //prints the tree objects
+        // // Get the first arg index flag on whether the user wants to use the serialized model 
+        // boolean toSerialize = (args[0] == "serialized"); 
 
-        // String input = ",,,,,,,,,,"; 
+        // // Get the rest of the arguments
+        // String input = String.join(",", Arrays.copyOfRange(args, 1, args.length)); 
+       
+        // // Create a DataContainer object of the user's input 
         // DataContainer userInput = new DataContainer(input); 
-        // userInput.print();
 
-        //NOTE AT THIS TIME I AM JUST COLLECTING THE ARRAY OF PREDICTIONS SO THAT WE CAN SEE HOW IT CHANGES WITH DIFFERENT INPUTS
-        // int[] prediction = forest.aggregate(userInput);
-        // int label0 = 0, label1 = 0;
-        
-        // System.out.println("Prediction array is: ");
-        // System.out.print("[");
-        // for (int i = 0; i < prediction.length - 1; i++) {
-        //     System.out.print(prediction[i] + ", ");
-        //     if (prediction[i] == 1) label1++;
-        //     else label0++;
+        // // Generate a null forest that is ready to be either trained or loaded into
+        // RandomForest forest = null;
+
+        // // Load the serialized model into the forest
+        // if (toSerialize) {
+        //     ensureSerializedModel(forest);        
         // }
-        // System.out.println(prediction[99] + "]");
-        // System.out.println("Label0 count = " + label0);
-        // System.out.println("Label1 count = " + label1);
-        // if (label0 > label1) System.out.println("NO ADDICTION");
-        // else System.out.println("YES ADDICTION");
+        // // Or, train a new model into the null forest
+        // else { 
+        //     trainNewModel(forest);
+        // }
 
- 
-    //tree testing  ---------------------------------------------------
+        // //get the prediction using the forest and the user's input.
+        // getPrediction(forest, userInput);
 
-        // DecisionTree root = new DecisionTree();
-        // root.buildTree(4);
-        
-        // System.out.println(root);
-        // System.out.println(root.getLeft());
-        // System.out.println(root.getRight());
-        // root.getLeft().print();
-        // root.getRight().print();
-        // root.print();
-
-    //decision node test cases (Tree class will handle) --------------------------------------
-
-        // DataContainer dataset = new DataContainer();
-        // DecisionNode root = new DecisionNode(dataset);
-        // //root.print();
-        // System.out.println(root.getLabel(0));
-        // System.out.println(root.getLabel(1));
-        // System.out.println(root.getLabel(2));
-        // System.out.println(root.getLabel(3));
-        // System.out.println(root.getLabel(4));
-
-        // // just testing left and right w/ random data, SPLITTINGCRITERIA() will be the one using this
-        // DataContainer dataLeft = new DataContainer(10, 13);
-        // DataContainer dataRight = new DataContainer(5, 13);
-        
-        // DecisionNode nodeLeft = new DecisionNode(dataLeft);
-        // DecisionNode nodeRight = new DecisionNode(dataRight);
-
-        // root.setLeft(nodeLeft);
-        // root.setRight(nodeRight);
-
-
-        // System.out.println("I am roots left child----");
-        // root.getLeft().getData().print();
-        // System.out.println("\nI am roots right child----");
-        // root.getRight().getData().print();
-
-        // System.out.println(root.isLeaf());
-        // System.out.println(nodeLeft.isLeaf());
-        // System.out.println(nodeRight.isLeaf());
-
-        // //Testing out label counts, will be used to find impurity/IG/giniIndex
-        // DataContainer bootstrappedData = new DataContainer(10, 5);
-        // bootstrappedData.print();
-
-
-    //data container label tests ----------------------------
-
-        // DataContainer bootstrappedData = new DataContainer(5, 5);
-        // bootstrappedData.print();
-        // System.out.println("\nLabel 0 = " + bootstrappedData.getLabelCount(0));
-        // System.out.println("Label 1 = " + bootstrappedData.getLabelCount(1));
-        // System.out.println("data class is pure = " + bootstrappedData.isPure());
-        
-        /*
-            40 male 7 YouTube 1 
-            58 non-binary 8 YouTube 1 
-            36 female 9 Instagram 1 
-            47 female 8 YouTube 1 
-            18 male 6 YouTube 1 
-
-            Label 0 = 0
-            Label 1 = 5
-            data class is pure = true
-        */
-
-
-    //dataset test case ---------------------------------------------
-
-        // DataContainer dataset = new DataContainer();
-        // System.out.println(dataset.getValue(0, 0));
-        // System.out.println(dataset.getValue(999, 11));
-        // dataset.print();
-
-
-    //bootstrap test case --------------------------------------------
-
-        // DataContainer bootstrappedData = new DataContainer(1000, 13);
-        // bootstrappedData.print();           
-
-
-    //data imputation on user input test cases ------------------------------------
-
-        //no inputs removed
-            // String input = "28,male,2,Instagram,Sports,Australia,Sub_Urban,Marketer Manager,10223,True,False,True"; 
-            // DataContainer userInput = new DataContainer(input); 
-            // userInput.print();     
-
-        //end removed
-            // String input = "28,male,2,Instagram,Sports,Australia,Sub_Urban,Marketer Manager,10223,True,False,"; 
-            // DataContainer userInput = new DataContainer(input); //true was inputted correctly
-            // userInput.print();
-
-        //first input removed
-            // String input = ",male,2,Instagram,Sports,Australia,Sub_Urban,Marketer Manager,10223,True,False,True"; 
-            // DataContainer userInput = new DataContainer(input); //43 was inputted correctly
-            // userInput.print();
-
-        //middle input "country" removed
-            // String input = "28,male,2,Instagram,Sports,,Sub_Urban,Marketer Manager,10223,True,False,True"; 
-            // DataContainer userInput = new DataContainer(input); 
-            // userInput.print();
-
-        //beginning & end removed
-            // String input = ",male,2,Instagram,Sports,Australia,Sub_Urban,Marketer Manager,10223,True,False,"; 
-            // DataContainer userInput = new DataContainer(input); 
-            // userInput.print();
-
-        //mixed removed
-            // String input = ",male,2,,Sports,,Sub_Urban,,10223,True,False,"; 
-            // DataContainer userInput = new DataContainer(input); 
-            // userInput.print();
-
+        //TESTING/////////////////////////////////////////////////////////////////
+        String input = ",,2,,,,,,,,,,";
+        DataContainer userInput = new DataContainer(input);
+        userInput.print();
+        RandomForest forest = new RandomForest(100);
+        predict(forest, userInput);
     }
 }
