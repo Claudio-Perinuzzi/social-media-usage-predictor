@@ -10,19 +10,28 @@ def main():
         'age': None,
         'gender': None,
         'time_spent': None,
-        'platform': None,
-        'interests': None,
-        'location': None,
+        'platform': None, 
+        'interests': None, # Any text option
+        'location': None,  # Any text option
         'demographics': None,
         'profession': None,
         'income': None,
         'indebt': None,
         'isHomeOwner': None,
-        'Owns_Car': None        
+        'Owns_Car': None,      
+
+        # ADDING ADDLT INFO FOR HELPING USER W/ INFO
+        # Change location to text box, can be anything
+        # Change interets to text box, can be anything
+        # If owns car & travel, radius 50 miles
+        # if indebt, offer cheaper options
+        # if homeOwner, offer tech free rooms options
+        # if homeOwner and demographics is suburban, rural, offer options there
+        # if homeOwner and urban, offer options there 
+        
+        # Add more
+        'to_serialze': None  
     }
-
-
-
 
     user_age = st.number_input('Enter your age', min_value=1, max_value=100)
     user_age = str(user_age)
