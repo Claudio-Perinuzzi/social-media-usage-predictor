@@ -1,17 +1,35 @@
 import java.io.Serializable;
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Decision Node Class
+ * Creates node objects used for the Decision Tree class. 
+ * 
+ * Each node will have: 
+ * 		- A self contained data container object 
+ * 		- A left and right child reference
+ * 		- A feature index used for splitting
+ * 		- A threshold value used for the split
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 public class DecisionNode implements Serializable{
 
-	private static final long serialVersionUID = 2L;
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+    * FIELDS
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+	private static final long serialVersionUID = 2L; // ID used for serializing the model
 	private DataContainer data;
 	private DecisionNode left;
 	private DecisionNode right;
-	private int featureIndex;	//the nodes feature index that it was split on
-	private String threshold;	//the nodes corresponding threshold used for the split
+	private int featureIndex;	// The nodes best feature index that it was split on
+	private String threshold;	// The nodes corresponding threshold used for the split
 
+    
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+    * CONSTRUCTORS
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-	//default empty node constructor
+	// Default empty node constructor
 	public DecisionNode() {
 		this.data = null;
 		this.left = null;
@@ -19,8 +37,7 @@ public class DecisionNode implements Serializable{
 		this.featureIndex = -1;
 		this.threshold = null;
 	}
-
-	//if internal or leaf node; internal nodes will have a featureIndex and threshold set to them
+	// Data contained constructor (NOTE: Internal nodes will have a featureIndex and threshold set to them)
 	public DecisionNode(DataContainer data) {
 		this.data = data;
 		this.left = null;
@@ -29,6 +46,9 @@ public class DecisionNode implements Serializable{
 		this.threshold = null;
 	}
 
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+    * METHODS
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 	public DecisionNode getRight(){
         return this.right;
@@ -42,7 +62,7 @@ public class DecisionNode implements Serializable{
     	return this.data;
     }
 
-    //returns the label of the given row, label is located at index 12
+    // Returns the label of the given row, label is located at index 12
     public String getLabel(int row) {   
     	return this.data.getValue(row, 12);
     }
