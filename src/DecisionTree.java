@@ -1,26 +1,44 @@
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Random;
 import java.lang.Math;
-import java.util.HashMap;
-import java.io.Serializable;
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Decision Tree Class
+ * Creates Tree objects used for the Random Forest Class. Each tree object will predict
+ * whether a new user's profile is at risk of social media addiction.
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 public class DecisionTree implements Serializable{
 	
-    private static final long serialVersionUID = 3L;
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+    * FIELDS
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    private static final long serialVersionUID = 3L; // ID used for serializing the model
 	private DecisionNode root;
 
 
-    //default constructor for an empty tree
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+    * CONSTRUCTOR
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    // Default constructor for an empty tree
 	public DecisionTree() {
         this.root = null;
 	}
 
 
-    //get the roots left child
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+    * METHODS
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    // Gets the roots left child
     public DecisionNode getLeft() {
         return this.root.getLeft();
     }
 
-    //get the roots right child 
+    // Gets the roots right child 
     public DecisionNode getRight() {
         return this.root.getRight();
     }
@@ -30,27 +48,20 @@ public class DecisionTree implements Serializable{
     }
 
 
-	//build the tree starting from the root
+	// Build the tree starting from the root
     public void buildTree(int numOfFeatures) {
-        DataContainer bootstrappedData = new DataContainer(1000, 13); //bootstrap first
+        DataContainer bootstrappedData = new DataContainer(1000, 13); // Bootstrap first
         this.root = new DecisionNode(bootstrappedData);
         buildTreeRecursively(this.root, bootstrappedData, numOfFeatures);
     }
 
-    //helper function to recursively build the tree from the root
+    // Helper function to recursively build the tree from the root
     private DecisionNode buildTreeRecursively(DecisionNode parentNode, DataContainer data, int numOfFeatures) {
-    	if (data.isPure()) return new DecisionNode(data);   //return a leaf node with data, since this data is pure
-    	int[] randomColumns = featureSelect(numOfFeatures); //collect random features into an array, about 3
+    	
+        if (data.isPure()) return new DecisionNode(data);   // Base case: return a leaf node with data, since this data is pure
+        int[] randomColumns = featureSelect(numOfFeatures); // Collect random features into an array, about 3
         
-        //FOR TESTING feature select ---------------------------
-        // System.out.print("[");
-        // for (int i = 0; i < randomColumns.length - 1; i++) {
-        //     System.out.print(randomColumns[i] + ", ");
-        // }
-        // System.out.println(randomColumns[randomColumns.length - 1] + "]");
-        //-------------------------------------------------------
-
-        //find the best feature to split on
+        // Find the best feature to split on (calculate the max info gained)
 	    double maxInfoGain = Double.NEGATIVE_INFINITY; 
 	    int bestFeatureIndexToSplit = -1; 
         String bestThreshold = null;
@@ -58,13 +69,13 @@ public class DecisionTree implements Serializable{
             double infoGain;
             String threshold;
 
-            //numeric values (ex: age)
+            // Numeric values (ex: age)
             if (featureIndex == 0 || featureIndex == 2 || featureIndex == 8) { 
                 int average = averageThreshold(data, featureIndex);
                 infoGain = calculateInfoGainFromNumericData(data, featureIndex, average);
                 threshold = String.valueOf(average);
             }  
-            //categorical values (ex: gender)              
+            // Categorical values (ex: gender)              
             else { 
                 String mode = modeThreshold(data, featureIndex);
                 infoGain = calculateInfoGainFromCategoricalData(data, featureIndex, mode);
@@ -78,31 +89,16 @@ public class DecisionTree implements Serializable{
 	        }
 	    }
 
-        //FOR TESTING -------------------------------------------------------
-        // System.out.println("\nMAX INFO GAIN = " + maxInfoGain);
-        // System.out.println("bestFeatureIndexToSplit = " + bestFeatureIndexToSplit);
-        // System.out.println("bestThreshold = " + bestThreshold);
-        // ------------------------------------------------------------------
 
-
-        //set the parents nodes feature index that we will split on and the corresponding threshold
+        // Set the parents nodes feature index that we will split on and the corresponding threshold
         parentNode.setFeatureIndex(bestFeatureIndexToSplit);
         parentNode.setThreshold(bestThreshold);
 
-        //split data first
+        // Split data first
         DataContainer leftData = data.split(true, bestFeatureIndexToSplit, bestThreshold);
         DataContainer rightData = data.split(false, bestFeatureIndexToSplit, bestThreshold);
 
-        //FOR TESTING -------------------------------------------------------
-        // System.out.println("\nI AM THE LEFT CHILD, I SPLIT ON " + bestThreshold + " which is at index of " + parentNode.getFeatureIndex());
-        // leftData.print();
-        // System.out.println("\n\n\n\n\n------------------");
-        // System.out.println("I AM THE RIGHT CHILD, I SPLIT ON NOT OF " + bestThreshold + " which is at index of " + parentNode.getFeatureIndex());
-        // rightData.print();
-        // ------------------------------------------------------------------
-
-
-        //deal with splits that are potentially uneven where data on either side can be empty
+        // Deal with splits that are potentially uneven where data on either side can be empty
         if (!leftData.isEmpty()) {
             DecisionNode leftChild = new DecisionNode(leftData);
             parentNode.setLeft(leftChild);
@@ -118,7 +114,7 @@ public class DecisionTree implements Serializable{
         return parentNode; 
     }
 
-    //calculate average from numeric data for the threshold value
+    // Calculate the average from numeric data for the threshold value
     private int averageThreshold(DataContainer data, int featureIndex) {
         int sum = 0;
         for (int r = 0; r < data.getRows(); r++) {
@@ -128,16 +124,16 @@ public class DecisionTree implements Serializable{
     }
 
     
-    //calculate the mode from categorical data for the threshold value
+    // Calculate the mode from categorical data for the threshold value
     private String modeThreshold(DataContainer data, int featureIndex) {
         HashMap<String, Integer> count = new HashMap<>();
         for (int r = 0; r < data.getRows(); r++) {
             String value = data.getValue(r, featureIndex);
-            if (!count.containsKey(value)) count.put(value, 1); //put in if it doesn't exist
-            else count.put(value, count.get(value) + 1);        //increment count if exists already
+            if (!count.containsKey(value)) count.put(value, 1);   // Put in if value doesn't exist yet
+            else count.put(value, count.get(value) + 1);                // Increment count if value exists already
         }
         
-        //iterate through and count to find mode
+        // Iterate through and count to find mode
         String modeThreshold = null;
         int max = 0;
         for (String value : count.keySet()) {
@@ -151,13 +147,13 @@ public class DecisionTree implements Serializable{
     }
 
 
-    //uses average of that column to determine the information gain of this potential split
+    // Uses average of that column to determine the information gain of this potential split
     private Double calculateInfoGainFromNumericData(DataContainer data, int featureIndex, int averageThreshold) {
         
         int leftCountLabel0 = 0, leftCountLabel1 = 0;
         int rightCountLabel0 = 0, rightCountLabel1 = 0;
        
-        //use averagethreshold to count the labels for a potential split
+        // Use average Threshold to count the labels for a potential split
         for (int r = 0; r < data.getRows(); r++) {
             if (Integer.parseInt(data.getValue(r, featureIndex)) <= averageThreshold) {
                 if (data.getLabel(r).equals("0")) leftCountLabel0++;
@@ -169,20 +165,20 @@ public class DecisionTree implements Serializable{
             }
         }
 
-        //calculate giniImpurities
+        // Calculate giniImpurities
         double giniImpurityParent = calculateGiniImpurity(data.getLabelCount(0), data.getLabelCount(1));
         double giniImpurityLeft, giniImpurityRight;
 
-        //if the left side has no labels, there was a full split and the gini impurity is 0
+        // If the left side has no labels, there was a full split and the gini impurity is 0
         if (leftCountLabel0 == 0 || leftCountLabel1 == 0) giniImpurityLeft = 0.0;
         else giniImpurityLeft = calculateGiniImpurity(leftCountLabel0, leftCountLabel1);
         
-        //if the right side has no labels, there was a full split and the gini impurity is 0
+        // If the right side has no labels, there was a full split and the gini impurity is 0
         if (rightCountLabel0 == 0 || rightCountLabel1 == 0) giniImpurityRight = 0.0;
         else giniImpurityRight = calculateGiniImpurity(rightCountLabel0, rightCountLabel1);
 
 
-        //calculate IG based on giniImpurities
+        // Calculate IG based on giniImpurities
         int totalSamples = leftCountLabel0 + leftCountLabel1 + rightCountLabel0 + rightCountLabel1;
         double informationGain = giniImpurityParent - ((double) (leftCountLabel0 + leftCountLabel1) / totalSamples * giniImpurityLeft 
                                  + (double) (rightCountLabel0 + rightCountLabel1) / totalSamples * giniImpurityRight);
@@ -190,13 +186,13 @@ public class DecisionTree implements Serializable{
         return informationGain;
     }
 
-    //uses the mode of that column to determine the information gain of this potential split
+    // Uses the mode of that column to determine the information gain of this potential split
     private Double calculateInfoGainFromCategoricalData(DataContainer data, int featureIndex, String modeThreshold) {
         
         int leftCountLabel0 = 0, leftCountLabel1 = 0;
         int rightCountLabel0 = 0, rightCountLabel1 = 0;
 
-        //use mode to count the labels for a potential split
+        // Use mode to count the labels for a potential split
         for (int r = 0; r < data.getRows(); r++) {
             if (data.getValue(r, featureIndex).equals(modeThreshold)) {
                 if (data.getLabel(r).equals("0")) leftCountLabel0++;
@@ -208,19 +204,19 @@ public class DecisionTree implements Serializable{
             }
         }
 
-        //calculate giniImpurities
+        // Calculate giniImpurities
         double giniImpurityParent = calculateGiniImpurity(data.getLabelCount(0), data.getLabelCount(1));
         double giniImpurityLeft, giniImpurityRight;
 
-        //if the left side has no labels, there was a full split and the gini impurity is 0
+        // If the left side has no labels, there was a full split and the gini impurity is 0
         if (leftCountLabel0 == 0 || leftCountLabel1 == 0) giniImpurityLeft = 0.0;
         else giniImpurityLeft = calculateGiniImpurity(leftCountLabel0, leftCountLabel1);
         
-        //if the right side has no labels, there was a full split and the gini impurity is 0
+        // If the right side has no labels, there was a full split and the gini impurity is 0
         if (rightCountLabel0 == 0 || rightCountLabel1 == 0) giniImpurityRight = 0.0;
         else giniImpurityRight = calculateGiniImpurity(rightCountLabel0, rightCountLabel1);
     
-        //calculate IG based on giniImpurities
+        // Calculate IG based on giniImpurities
         int totalSamples = leftCountLabel0 + leftCountLabel1 + rightCountLabel0 + rightCountLabel1;
         double informationGain = giniImpurityParent - ((double) (leftCountLabel0 + leftCountLabel1) / totalSamples * giniImpurityLeft 
                                  + (double) (rightCountLabel0 + rightCountLabel1) / totalSamples * giniImpurityRight);
@@ -228,24 +224,22 @@ public class DecisionTree implements Serializable{
         return informationGain;
     }
 
-
-    //helper function used to calculate information gain
+    // Helper function used to calculate information gain
     private double calculateGiniImpurity(int countLabel0, int countLabel1) {
-        //total number of labels
+        // Total number of labels
         int totalSamples = countLabel0 + countLabel1; 
 
-        //probabilities of each label
+        // Probabilities of each label
         double probability0 = (double) countLabel0 / totalSamples;
         double probability1 = (double) countLabel1 / totalSamples;
 
-        //giniImpurity formula
+        // GiniImpurity formula
         double giniImpurity = 1.0 - (Math.pow(probability0, 2) + Math.pow(probability1, 2));
 
         return giniImpurity;
     }
 
-
-    //randomly select different columns of the bootstrapped data
+    // Randomly select different columns of the bootstrapped data
     private int[] featureSelect(int numOfFeatures) {
     	Random rand = new Random();
     	int[] randomColumns = new int[numOfFeatures];
@@ -267,7 +261,7 @@ public class DecisionTree implements Serializable{
     	return randomColumns;
     }
 
-    //prints the roots data
+    // Prints the roots data
     public void print() {
         this.root.print();
     }
