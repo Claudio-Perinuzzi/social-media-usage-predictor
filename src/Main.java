@@ -1,4 +1,3 @@
-
 import java.io.File;
 import java.io.ObjectOutputStream;
 import java.io.FileOutputStream;
@@ -23,36 +22,51 @@ import java.util.Arrays;
 public class Main {
     public static void main(String[] args)  {
         
-        // // Get the first arg index flag on whether the user wants to use the serialized model 
-        // boolean toSerialize = (args[0] == "serialized"); 
+        // Get the arg index 0 flag on whether the user wants to use the serialized model 
+        boolean toSerialize = (args[0].equals("True")); 
+        String location = args[1];
+        String hobbies = args[2];
 
-        // // Get the rest of the arguments
-        // String input = String.join(",", Arrays.copyOfRange(args, 1, args.length)); 
-       
-        // // Create a DataContainer object of the user's input 
-        // DataContainer userInput = new DataContainer(input); 
+        // Get the rest of the arguments
+        String input = String.join(",", Arrays.copyOfRange(args, 3, args.length)); 
 
-        // // Generate a null forest that is ready to be either trained or loaded into
+        // Create a DataContainer object of the user's input 
+        DataContainer userInput = new DataContainer(input); 
+
+                    System.out.print("to serialize = ");
+                    System.out.println(toSerialize);
+                    System.out.println("my location is " + location);
+                    System.out.println("my hobbies are " + hobbies);
+                    System.out.println("my input is " + input);
+                    System.out.print("my data container input is: ");
+                    userInput.print();
+
+                    
+
+
+        // Generate a null forest that is ready to be either trained or loaded into
         // RandomForest forest = null;
 
-        // // Load the serialized model into the forest
-        // if (toSerialize) {
-        //     ensureSerializedModel(forest);        
-        // }
-        // // Or, train a new model into the null forest
-        // else { 
-        //     trainNewModel(forest, 100);
-        // }
-
-        // //get the prediction using the forest and the user's input.
-        // getPrediction(forest, userInput);
+        // Load the serialized model into the forest
+        if (toSerialize) {
+            RandomForest forest = ensureSerializedModel();     
+            predict(forest, userInput);
+        }
+        // Or, train a new model into the null forest
+        else { 
+            RandomForest forest = trainNewModel(100);
+            predict(forest, userInput);
+        }
+        
+        //get the prediction using the forest and the user's input.
+        // predict(forest, userInput);
 
         //TESTING/////////////////////////////////////////////////////////////////
-        String input = ",,2,,,,,,,,,,";
-        DataContainer userInput = new DataContainer(input);
-        // userInput.print();
-        RandomForest forest = new RandomForest(100);
-        predict(forest, userInput);
+        // String input = ",,2,,,,,,,,,,";
+        // DataContainer userInput = new DataContainer(input);
+        // // userInput.print();
+        // RandomForest forest = new RandomForest(100);
+        // predict(forest, userInput);
         //TESTING/////////////////////////////////////////////////////////////////
     }
 
@@ -88,14 +102,15 @@ public class Main {
 
 
     // Train the model with 100 decision trees
-    public static void trainNewModel(RandomForest forest, int numTrees) {
-        forest = new RandomForest();
-        forest.train(numTrees);    
+    public static RandomForest trainNewModel(int numTrees) {
+        RandomForest forest = new RandomForest();
+        forest.train(numTrees);   
+        return forest; 
     }
 
 
     // Ensure that the serialized model exists. If not, train a new model and save it
-    public static void ensureSerializedModel(RandomForest forest) {
+    public static RandomForest ensureSerializedModel() {
         
         // Path the model exists and a create new file object at that path
         String modelPath = "model/randomForestModel.ser";
@@ -105,23 +120,28 @@ public class Main {
         if (file.exists()) { // Load in the model if it exists
             // Deserialize the trained forest and read it into the forest object
             try (ObjectInputStream ois = new ObjectInputStream(new GZIPInputStream(new FileInputStream(modelPath)))) {
-                forest = (RandomForest) ois.readObject();
+                RandomForest forest = (RandomForest) ois.readObject();
                 System.out.println("Random Forest model deserialized successfully.");
+                return forest;
             } catch (Exception e) {
                 e.printStackTrace();
+                return null;
             }
         }
 
         else { // Train and save a new model if it does not exist in the file path
-            trainNewModel(forest, 100);
+            RandomForest forest = trainNewModel(100);
             //serialize the trained forest and save it to the file path
             try (ObjectOutputStream oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(modelPath)))) {
                 oos.writeObject(forest);
                 System.out.println("Random Forest model serialized successfully.");
+                return forest;
             } catch (Exception e) {
                 e.printStackTrace();
+                return null;
             }
-        }    
+        }   
+        
     }
 
 
