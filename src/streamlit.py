@@ -2,35 +2,37 @@ import streamlit as st
 import subprocess
 import os
 
+# TODO
+    # ADDING ADDLT INFO FOR HELPING USER W/ INFO
+    # Change location to text box, can be anything
+    # Change interets to text box, can be anything
+    # If owns car & travel, radius 50 miles
+    # if indebt, offer cheaper options
+    # if homeOwner, offer tech free rooms options
+    # if homeOwner and demographics is suburban, rural, offer options there
+    # if homeOwner and urban, offer options there         
 
 def main():
 
-
     user_values = {
+        # Custom values used to help the user
+        'to_serialze': None,         # [0]
+        'country_state_town': None,  # [1] Any text option 
+        'hobbies': None,             # [2] Any text option    
+        
+        # Tree values used for the prediction 
         'age': None,
         'gender': None,
         'time_spent': None,
         'platform': None, 
-        'interests': None, # Any text option
-        'location': None,  # Any text option
+        'interests': None, 
+        'location': None,     
         'demographics': None,
         'profession': None,
         'income': None,
         'indebt': None,
         'isHomeOwner': None,
-        'Owns_Car': None,      
-
-        # ADDING ADDLT INFO FOR HELPING USER W/ INFO
-        # Change location to text box, can be anything
-        # Change interets to text box, can be anything
-        # If owns car & travel, radius 50 miles
-        # if indebt, offer cheaper options
-        # if homeOwner, offer tech free rooms options
-        # if homeOwner and demographics is suburban, rural, offer options there
-        # if homeOwner and urban, offer options there 
-        
-        # Add more
-        'to_serialze': None  
+        'Owns_Car': None
     }
 
     user_age = st.number_input('Enter your age', min_value=1, max_value=100)
@@ -52,7 +54,7 @@ def main():
     user_interests = st.selectbox('Choose your most favorite interest', interests)
     user_values['interests'] = user_interests
 
-    locations = ['Australia', 'United Kingdom', 'United States']
+    locations = ['Australia', 'United Kingdom', 'United States', 'None']
     user_location = st.selectbox('Choose the location you live in', locations)
     user_values['location'] = user_location
 
@@ -80,7 +82,12 @@ def main():
     user_owns_car = 'True' if user_owns_car == 'Yes' else 'False'
     user_values['Owns_Car'] = user_owns_car
 
+    user_hobbies = st.text_input("Enter your favorite hobby.")
+    user_values['hobbies'] = user_hobbies
 
+    to_serialize = st.radio('Use a serialized model?', ['Yes', 'No'])
+    to_serialize = 'True' if to_serialize == 'Yes' else 'False'
+    user_values['to_serialze'] = to_serialize
 
 
 
