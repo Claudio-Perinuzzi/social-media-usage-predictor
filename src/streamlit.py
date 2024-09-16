@@ -3,6 +3,7 @@ import subprocess
 import os
 
 # TODO
+    # Truncate decimal off confidence level
     # ADDING ADDLT INFO FOR HELPING USER W/ INFO
     # Change location to text box, can be anything
     # Change interets to text box, can be anything
@@ -16,9 +17,9 @@ def main():
 
     user_values = {
         # Custom values used to help the user
-        'to_serialze': None,         # [0]
-        'country_state_town': None,  # [1] Any text option 
-        'hobbies': None,             # [2] Any text option    
+        'to_serialize': None,       # [0] Boolean (true if the user wants to load in a existent model)
+        'state_town': None,         # [1] Text option 
+        'hobbies': None,            # [2] Text option    
         
         # Tree values used for the prediction 
         'age': None,
@@ -26,7 +27,7 @@ def main():
         'time_spent': None,
         'platform': None, 
         'interests': None, 
-        'location': None,     
+        'location': None,       # [8] Country of User   
         'demographics': None,
         'profession': None,
         'income': None,
@@ -35,71 +36,106 @@ def main():
         'Owns_Car': None
     }
 
+
+    # Get Age
     user_age = st.number_input('Enter your age', min_value=1, max_value=100)
     user_age = str(user_age)
     user_values['age'] = user_age
 
+
+    # Get Gender
     user_gender = st.selectbox('Choose your gender', ['Male', 'Female'])
     user_values['gender'] = user_gender.lower()
 
+
+    # Get Time Spent
     user_time_spent = st.number_input('Enter the number of hours you use social media per day', min_value=0, max_value=24)
     user_time_spent = str(user_time_spent)
     user_values['time_spent'] = user_time_spent
 
+
+    # Get perferred platform
     platforms = ['Instagram', 'YouTube', 'Facebook']
     user_platform = st.selectbox('Choose your most favorite social media platform', platforms)
     user_values['platform'] = user_platform
 
+
+    # Get favorite interest
     interests = ['Lifestlye', 'Sports', 'Travel']
     user_interests = st.selectbox('Choose your most favorite interest', interests)
     user_values['interests'] = user_interests
 
+
+    # Get Hobbies
+    user_hobbies = st.text_input("Enter your favorite hobby.")
+    user_values['hobbies'] = user_hobbies
+
+
+    # Get User's Location (Country)
     locations = ['Australia', 'United Kingdom', 'United States', 'None']
     user_location = st.selectbox('Choose the location you live in', locations)
+    if user_location == 'None':
+        user_location = st.text_input('Please manually enter the country you reside in')
     user_values['location'] = user_location
 
+    
+    #Get User's State/Town
+    state_town = st.text_input('Please enter the state and county where you reside')
+    user_values['state_town'] = state_town
+
+
+    # Get Demographics
     demographics = ['Rural', 'Suburban', 'Urban']
     user_demographics = st.selectbox('Choose your locations demographics', demographics)
     if user_demographics == 'Suburban': user_demographics = 'Sub_Urban'
     user_values['demographics'] = user_demographics
 
+
+    # Get Profession
     professions = ['Marketer Manager', 'Software Engineer', 'Student']
     user_profession = st.selectbox('Choose your profession', professions)
     user_values['profession'] = user_profession
 
+
+    # Get Income
     user_income = st.number_input('Enter your income', min_value=0, max_value=1_000_000)
     user_values['income'] = str(user_income)
 
-    user_indebt = st.radio('Are you indebt?', ['Yes', 'No'])
+
+    # Get If Indebt
+    user_indebt = st.selectbox('Are you indebt?', ['Yes', 'No'])
     user_indebt = 'True' if user_indebt == 'Yes' else 'False'
     user_values['indebt'] = user_indebt
 
-    user_home_owner = st.radio('Are you a homeownder?', ['Yes', 'No'])
+
+    # Get If Homeowner
+    user_home_owner = st.selectbox('Are you a homeownder?', ['Yes', 'No'])
     user_home_owner = 'True' if user_home_owner == 'Yes' else 'False'
     user_values['isHomeOwner'] = user_home_owner
 
-    user_owns_car = st.radio('Do you own a car?', ['Yes', 'No'])
+
+    # Get If Car Owner
+    user_owns_car = st.selectbox('Do you own a car?', ['Yes', 'No'])
     user_owns_car = 'True' if user_owns_car == 'Yes' else 'False'
     user_values['Owns_Car'] = user_owns_car
 
-    user_hobbies = st.text_input("Enter your favorite hobby.")
-    user_values['hobbies'] = user_hobbies
 
-    to_serialize = st.radio('Use a serialized model?', ['Yes', 'No'])
-    to_serialize = 'True' if to_serialize == 'Yes' else 'False'
-    user_values['to_serialze'] = to_serialize
+    # Train a Model Button
+    st.title("Get Your Prediciton")
 
 
-
-    # Streamlit UI
-    st.title("Run JAR File from Streamlit")
-
-    # Button to trigger the jar execution
-    if st.button("Run JAR"):
+    # Trains a new Model Button
+    if st.button('Train a New Model (Recommended)'):
+        user_values['to_serialize'] = 'False'
         output = run_jar(user_values)
         st.text_area("Output", output, height=300)
+    
 
-
+    # Load in a Existent Model Button
+    if st.button('Load in a Existent Model'):
+        user_values['to_serialize'] = 'True'
+        output = run_jar(user_values)
+        st.text_area("Output", output, height=300)
 
 
 
