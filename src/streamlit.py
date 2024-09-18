@@ -17,9 +17,9 @@ def main():
 
     user_values = {
         # Custom values used to help the user
-        'to_serialize': None,       # [0] Boolean (true if the user wants to load in a existent model)
-        'state_town': None,         # [1] Text option 
-        'hobbies': None,            # [2] Text option    
+        'to_serialize': None,   # args[0] Boolean (true if the user wants to load in a existent model)
+        'state_town': None,     # State and Town of User    
+        'hobbies': None,               
         
         # Tree values used for the prediction 
         'age': None,
@@ -27,7 +27,7 @@ def main():
         'time_spent': None,
         'platform': None, 
         'interests': None, 
-        'location': None,       # [8] Country of User   
+        'location': None,       # Country of User   
         'demographics': None,
         'profession': None,
         'income': None,
@@ -80,7 +80,7 @@ def main():
 
     
     #Get User's State/Town
-    state_town = st.text_input('Please enter the state and county where you reside')
+    state_town = st.text_input('Please enter the state and town where you reside')
     user_values['state_town'] = state_town
 
 
@@ -92,7 +92,7 @@ def main():
 
 
     # Get Profession
-    professions = ['Marketer Manager', 'Software Engineer', 'Student']
+    professions = ['Marketer Manager', 'Software Engineer', 'Student', 'Neither']
     user_profession = st.selectbox('Choose your profession', professions)
     user_values['profession'] = user_profession
 
@@ -122,20 +122,28 @@ def main():
 
     # Train a Model Button
     st.title("Get Your Prediciton")
+    prediction = ''
 
 
     # Trains a new Model Button
-    if st.button('Train a New Model (Recommended)'):
+    if st.button('Train a New Model (Recommended)', 'am i another button?'):
         user_values['to_serialize'] = 'False'
-        output = run_jar(user_values)
-        st.text_area("Output", output, height=300)
-    
+        prediction = run_jar(user_values)
+        st.text_area("Prediction:", prediction, height=300)
+
 
     # Load in a Existent Model Button
     if st.button('Load in a Existent Model'):
         user_values['to_serialize'] = 'True'
-        output = run_jar(user_values)
-        st.text_area("Output", output, height=300)
+        prediction = run_jar(user_values)
+        st.text_area("Prediction", prediction, height=300)
+
+
+    # Offer suggestions to help the user, if the user is at risk of social medial addiction
+    if 'risk' in prediction:
+        offerSuggestions(user_values)
+    else:
+        pass #TODO 
 
 
 
@@ -165,5 +173,52 @@ def run_jar(arg_map):
     except Exception as e:
         return str(e)  # Return any error messages if something goes wrong
 
+
+# TODO ########
+# If owns car & travel, radius 50 miles
+# if indebt, offer cheaper options
+# if homeOwner, offer tech free rooms options
+# if homeOwner and demographics is suburban, rural, offer options there
+# if homeOwner and urban, offer options there         
+def offerSuggestions(user_values):
+    radius_miles = calculate_miles(user_values['Owns_Car']) # Calculate how far the user can go (10 miles if no car, 50 with a car)
+    country = user_values['location']
+    state_town = user_values['state_town']
+    interests = user_values['interests']
+    hobbies = user_values['hobbies']
+    
+    if user_values['interests'] == 'Travel':
+        pass
+
+
+
+def calculate_miles(owns_car):
+    return 50 if owns_car == 'True' else 10
+
+
+
 if __name__ == '__main__':
     main()
+
+
+
+# #   user_values = {
+#     # Custom values used to help the user
+#     'to_serialize': None,   # args[0] Boolean (true if the user wants to load in a existent model)
+#     'state_town': None,     # State and Town of User    
+#     'hobbies': None,               
+    
+#     # Tree values used for the prediction 
+#     'age': None,
+#     'gender': None,
+#     'time_spent': None,
+#     'platform': None, 
+#     'interests': None, 
+#     'location': None,       # Country of User   
+#     'demographics': None,
+#     'profession': None,
+#     'income': None,
+#     'indebt': None,
+#     'isHomeOwner': None,
+#     'Owns_Car': None
+# }
