@@ -1,1 +1,4 @@
+googlesearch
+beautifulsoup4
 streamlit
+requests
