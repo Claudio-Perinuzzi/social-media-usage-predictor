@@ -1,4 +1,4 @@
-googlesearch
+googlesearch-python
 beautifulsoup4
 streamlit
 requests
