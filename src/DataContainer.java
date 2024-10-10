@@ -25,7 +25,7 @@ public class DataContainer implements Serializable{
     private static String[][] dataset;               // Static initialized, shared by all instances of the class
     static {
         try {
-            dataset = loadDataset("/Users/claudioperinuzzi/Desktop/Projects/Java/social-media-usage-predictor/data/user_social_media_profiles.csv");
+            dataset = loadDataset("src/data/user_social_media_profiles.csv");
         } catch (IOException e) {
             e.printStackTrace();
         }
