@@ -4,7 +4,7 @@
 
 the Social Media Usage Predictor is a web application that predicts social media addiction based on user-provided information, including social media habits and socioeconomic background.
 
-You can try out the app live here: [Social Meia Usafe Predictor App](https://social-media-usage-predictor.streamlit.app/)
+You can try out the app live here: [Social Meia Usage Predictor App](https://social-media-usage-predictor.streamlit.app/)
 
 ## Introduction
 
@@ -19,32 +19,14 @@ The high level architectural design of the system is as follows:
 
 ![MVC Architecture](assets/uml_diagram1.png)
 
+Training the Random Forest:
 
+![Random Forest Training](assets/uml_sequence_functional1.png)
 
+Reading in User Data and Predicting:
 
+![Prediction On User Data](assets/uml_sequence_functional2.png)
 
+Generating a Report:
 
-
-
-
-## Linear Regression (Prediction Model)
-
-This project involves predicting future Air Quality Index (AQI) averages using a linear regression model. The model is trained on historical annual and seasonal AQI averages, categorized by borough community district codes. This approach allows us to forecast AQI values for each borough code based on historical trends.
-
-### Model Training and Prediction
-
-- **Data**: The model uses AQI data over multiple years, segmented by borough community district codes. The dataset includes both annual and seasonal averages.
-  
-- **Training**: The linear regression model was trained on the historical AQI data. The downward trend observed in the dataset helps the model make informed predictions.
-
-- **Prediction Horizon**: Due to the ongoing downward trend, the model can reliably predict AQI averages up to the next 5 years. Beyond this period, accuracy may decline as the dataset does not show a tapering off in AQI values.
-
-### Visualization
-
-A scatter plot illustrating the downward trend for Manhattan's borough codes is shown below. This visualization helps to understand the trend and validate the model's predictions.
-
-![Scatter Plot of AQI Trends](assets/scatter_plots/annual_scatter_plot_boro_cd_100s.png)
-
-### Model Performance
-
-The model's performance is evaluated based on its ability to predict future AQI values accurately. As the dataset shows a consistent trend without a tapering effect, predictions remain reliable within the next 5 years.
+![Report](assets/uml_sequence_functional3.png)
