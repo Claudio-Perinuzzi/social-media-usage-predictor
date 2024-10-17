@@ -1,10 +1,24 @@
 # Social Media Usage Predictor
 
+<img src="assets/tree_img.png" alt="Logo"/>
+
+<p style='text-align: center; font-size: 17.5px; color: white;'>
+    The average American spends <strong style='color: white;'>~2.5 hours</strong> per day on social media.
+</p>
+
+<p style='text-align: center; font-size:17.5px; color: white;'>
+    Over the course of 1 year, this equates to <span style='color: red; font-weight: bold;'>more than 1 month</span> wasted on social media.
+</p>
+        
+<p style='text-align: center; font-size: 17.5px; color: white; font-weight: bold;'>
+    This is <span style='color: white; font-weight: bold;'>5.7</span> <span style='color: red; font-weight: bold;'>or more years</span> spent on social media platforms GONE by the age of 73!
+</p>
+
 ## Usage and Interaction
 
-the Social Media Usage Predictor is a web application that predicts social media addiction based on user-provided information, including social media habits and socioeconomic background.
+Social Media Usage Predictor is a web application that predicts social media addiction based on user-provided information, including social media habits and socioeconomic background. It uses a random forest machine learning algorithm built from scratch in Java.
 
-You can try out the app live here: [Social Meia Usage Predictor App](https://social-media-usage-predictor.streamlit.app/)
+You can try out the app live here: [Social Media Usage Predictor App](https://social-media-usage-predictor.streamlit.app/)
 
 ## Introduction
 
@@ -39,21 +53,29 @@ The system follows the Model-View-Controller (MVC) pattern, which separates user
 
 ### Training the Model
 
-The Random Forest model was implemented in Java from scratch. The following sequence diagram outlines the classes involved and the training process on the dataset:
+The Random Forest model was implemented in Java from scratch. First, a `DataContainer` object is instantiated with the training dataset. This dataset is bootstrapped at the Decision Tree level, meaning random samples (with replacement) are drawn to create multiple datasets for each decision tree. This introduces more variety for each Decision Tree.
+
+For each tree, a Decision Tree is recursively built using feature selection. At each node, an algorithm calculates the maximum information gain using Gini impurity to determine the best feature to split the data on. Once the best feature is determined, the node splits the data on this feature and the process continues for each node until a pure leaf is detected.
+
+These decision trees are then collected into an array within the `RandomForest` object. This object can then be used to predict, given new user input, whether the user is at risk of social media addiction.
+
+The following sequence diagram outlines the classes involved and the training process on the dataset:
 
 <img src="assets/uml_sequence_functional1.png" alt="Random Forest Training" width="600"/>
 
 
 ### Using the Model to Make a Prediction
 
-Since the Model was trained on a data container object of the dataset, a new data container object is instantiated upon the user's input that is subsequently fed into the Forest for a prediction.
+Since the model was trained on a `DataContainer` object containing the dataset, a new `DataContainer` object is instantiated when the user provides input. This new object is subsequently fed into the `RandomForest` for prediction. The user's input is then processed through the array of Decision Trees within the Random Forest, where individual predictions are aggregated. A majority vote is conducted to determine whether the user is at risk of addiction.
 
 <img src="assets/uml_sequence_functional2.png" alt="Prediction On User Data" width="450"/>
 
 
 ### Generating a Report Based on the Prediction:
 
-Upon generating a prediction, the system creates a report for user review. 
+Upon generating a prediction, the system creates a report for user review. If the user is identified as being at risk of social media addiction, the system will notify them of this risk and provide additional resources for support. Conversely, if the user is not at risk, the system will commend their healthy habits and offer resources to help them maintain their positive behavior.
+
+The resources provided are tailored to the user's input, taking into account factors such as location, interests, and socioeconomic background when suggesting relevant support materials.
  
 <img src="assets/uml_sequence_functional3.png" alt="Report" width="450"/>
 
