@@ -37,6 +37,42 @@ user_values = {
 }
 
 
+def display_heading():
+    st.markdown("""
+        <h1 style='text-align: center; font-size: 50px; font-weight: bold; color: white;'>
+            Social Media Usage Predictor
+        </h1>
+    """, unsafe_allow_html=True)
+    
+    st.image('assets/cal_img.png')
+
+    st.markdown("""        
+        <p style='text-align: center; font-size: 17.5px; color: white;'>
+            The average American spends <strong style='color: white;'>~2.5 hours</strong> per day on social media.
+        </p>
+        
+        <p style='text-align: center; font-size:17.5px; color: white;'>
+            Over the course of 1 year, this equates to <span style='color: red; font-weight: bold;'>more than 1 month</span> wasted on social media.
+        </p>
+                
+        <p style='text-align: center; font-size: 17.5px; color: white; font-weight: bold;'>
+            This is <span style='color: white; font-weight: bold;'>5.7</span> <span style='color: red; font-weight: bold;'>or more years</span> spent on social media platforms GONE by the age of 73!
+        </p>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+        <div style="text-align: center; font-size: 15px;">
+            <a href="https://www.forbes.com/sites/timbajarin/2023/09/19/spending-time-on-social-media-is-both-good-and-bad/" target="_blank">
+                Source: Forbes
+            </a>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # Create white space
+    for i in range(5): st.text('')
+
+    st.markdown("<p style='font-size:20px;'>Enter the information below to determine if you are at risk of social media addiction:</p>", unsafe_allow_html=True)
+
 def get_age():
     user_age = st.number_input('Enter your age', min_value=1, max_value=100)
     user_age = str(user_age)
@@ -80,7 +116,7 @@ def get_country():
 
     
 def get_state_town():
-    state_town = st.text_input('Please enter the state and town where you reside')
+    state_town = st.text_input('Please enter the town and state where you reside')
     user_values['state_town'] = state_town
 
 
@@ -122,7 +158,7 @@ def get_car_owner():
 
 # Trains a New Model and gets the predictions
 def train_new_model():
-    if st.button('Train a New Model'):
+    if st.button('Train a New Model to Use For Your Prediction'):
         user_values['to_serialize'] = 'False'
         prediction = run_jar(user_values)
         st.text_area("Prediction:", prediction, height=100)
@@ -132,7 +168,7 @@ def train_new_model():
 
 # Loads in a Existent Model and gets the prediction
 def load_existent_model():
-    if st.button('Load in a Existent Model'):
+    if st.button('Load in a Existent Model to Use For Your Prediction'):
         user_values['to_serialize'] = 'True'
         prediction = run_jar(user_values)
         st.text_area("Prediction:", prediction, height=100)
@@ -215,3 +251,8 @@ def search_for_results(suggestions, query):
             suggestions.append((title, result))
         except Exception as e:
             print(f"Error processing {result}: {e}")
+            
+# Displays the end of the webpage
+def display_end():
+    st.image('assets/tree_img.png')
+    st.write('Social Media Usage Predictor uses a random forest machine learning algorithm to predict whether a user is at risk of social media addiction.')
