@@ -122,13 +122,13 @@ def get_car_owner():
 
 # Trains a New Model and gets the predictions
 def train_new_model():
-    if st.button('Train a New Model (Recommended)'):
+    if st.button('Train a New Model'):
         user_values['to_serialize'] = 'False'
         prediction = run_jar(user_values)
         st.text_area("Prediction:", prediction, height=100)
         suggestions = offer_suggestions(user_values)
         display_links(prediction, suggestions)
-
+        
 
 # Loads in a Existent Model and gets the prediction
 def load_existent_model():
