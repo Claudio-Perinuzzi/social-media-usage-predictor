@@ -1,7 +1,5 @@
 import streamlit as st
 from app_ui import *
-
-import matplotlib.pyplot as plt
     
 ###################################################################
 # Streamlit Main Logic:
