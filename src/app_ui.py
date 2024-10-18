@@ -56,7 +56,7 @@ def display_heading():
         </p>
                 
         <p style='text-align: center; font-size: 17.5px; color: white; font-weight: bold;'>
-            This is <span style='color: white; font-weight: bold;'>5.7</span> <span style='color: red; font-weight: bold;'>or more years</span> spent on social media platforms GONE by the age of 73!
+            Starting by 15 years old, this is <span style='color: white; font-weight: bold;'>5</span> <span style='color: red; font-weight: bold;'>or more years</span> spent on social media platforms GONE by the age of 75!
         </p>
     """, unsafe_allow_html=True)
 
